@@ -1,0 +1,191 @@
+[
+  {
+    "date": 1010001,
+    "delay": 14,
+    "distance": 405,
+    "origin": "MCI",
+    "destination": "MDW"
+  },
+  {
+    "date": 1010530,
+    "delay": -11,
+    "distance": 370,
+    "origin": "LAX",
+    "destination": "PHX"
+  },
+  {
+    "date": 1010540,
+    "delay": 5,
+    "distance": 389,
+    "origin": "ONT",
+    "destination": "SMF"
+  },
+  {
+    "date": 1010600,
+    "delay": -5,
+    "distance": 337,
+    "origin": "OAK",
+    "destination": "LAX"
+  },
+  {
+    "date": 1010600,
+    "delay": 3,
+    "distance": 303,
+    "origin": "MSY",
+    "destination": "HOU"
+  },
+  {
+    "date": 1010605,
+    "delay": 5,
+    "distance": 236,
+    "origin": "LAS",
+    "destination": "LAX"
+  },
+  {
+    "date": 1010610,
+    "delay": -4,
+    "distance": 405,
+    "origin": "MDW",
+    "destination": "MCI"
+  },
+  {
+    "date": 1010615,
+    "delay": -2,
+    "distance": 188,
+    "origin": "RNO",
+    "destination": "SJC"
+  },
+  {
+    "date": 1010615,
+    "delay": 0,
+    "distance": 197,
+    "origin": "FLL",
+    "destination": "TPA"
+  },
+  {
+    "date": 1010615,
+    "delay": 0,
+    "distance": 399,
+    "origin": "SEA",
+    "destination": "BOI"
+  },
+  {
+    "date": 1010615,
+    "delay": 5,
+    "distance": 562,
+    "origin": "ELP",
+    "destination": "DAL"
+  },
+  {
+    "date": 1010620,
+    "delay": -5,
+    "distance": 358,
+    "origin": "SMF",
+    "destination": "BUR"
+  },
+  {
+    "date": 1010620,
+    "delay": 0,
+    "distance": 491,
+    "origin": "BNA",
+    "destination": "MCI"
+  },
+  {
+    "date": 1010625,
+    "delay": -6,
+    "distance": 361,
+    "origin": "ONT",
+    "destination": "OAK"
+  },
+  {
+    "date": 1010625,
+    "delay": 0,
+    "distance": 313,
+    "origin": "MCI",
+    "destination": "OKC"
+  },
+  {
+    "date": 1010625,
+    "delay": 1,
+    "distance": 271,
+    "origin": "MDW",
+    "destination": "SDF"
+  },
+  {
+    "date": 1010625,
+    "delay": 5,
+    "distance": 689,
+    "origin": "SLC",
+    "destination": "SEA"
+  },
+  {
+    "date": 1010630,
+    "delay": -1,
+    "distance": 487,
+    "origin": "TPA",
+    "destination": "MSY"
+  },
+  {
+    "date": 1010630,
+    "delay": -10,
+    "distance": 399,
+    "origin": "BOI",
+    "destination": "SEA"
+  },
+  {
+    "date": 1010630,
+    "delay": -15,
+    "distance": 621,
+    "origin": "SJC",
+    "destination": "PHX"
+  },
+  {
+    "date": 1010630,
+    "delay": -2,
+    "distance": 361,
+    "origin": "OAK",
+    "destination": "ONT"
+  },
+  {
+    "date": 1010630,
+    "delay": -3,
+    "distance": 220,
+    "origin": "ISP",
+    "destination": "BWI"
+  },
+  {
+    "date": 1010630,
+    "delay": -3,
+    "distance": 397,
+    "origin": "SMF",
+    "destination": "LAS"
+  },
+  {
+    "date": 1010630,
+    "delay": -8,
+    "distance": 251,
+    "origin": "MDW",
+    "destination": "STL"
+  },
+  {
+    "date": 1010630,
+    "delay": -8,
+    "distance": 417,
+    "origin": "SJC",
+    "destination": "SAN"
+  },
+  {
+    "date": 1010630,
+    "delay": 1,
+    "distance": 682,
+    "origin": "BWI",
+    "destination": "BHM"
+  },
+  {
+    "date": 1010630,
+    "delay": 10,
+    "distance": 370,
+    "origin": "PHX",
+    "destination": "LAX"
+  }
+]
