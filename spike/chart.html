@@ -35,6 +35,10 @@
   shape-rendering: crispEdges;
 }
 
+.bar:hover {
+    fill: brown;
+}
+
 
 </style>
 </head>
@@ -50,14 +54,33 @@
 <script src="libs/d3.v3.min.js"></script>
 <script type="text/javascript">
 
+const FIVE_MINUTES_IN_SECONDS = 300;
+
 let data = [];
-for( let i = 0; i < 60; i ++) {
+for( let i = 0; i < FIVE_MINUTES_IN_SECONDS; i ++) {
     data.push(i);
 }
 
+function secondsToHumanTime(time) {
+    const myTime = new Date(time);
+    return {
+        hours: myTime.getUTCHours(),
+        minutes: myTime.getUTCMinutes(),
+        seconds: myTime.getUTCSeconds(),
+    };
+};
+
+const durationSongInMiliseconds = data.length * 1000;
+
+const songTime = secondsToHumanTime(durationSongInMiliseconds);
+
+// El dominio del los valores de X tiene que estar en "Minutos", por ejemplo
+// si el tema dura, 300 segundos, o sea 5 minutos, tiene que haber un tick value por minuto y 
+// tiene que aparecer bars que ocupen 5 segundos, por ende 12 en total
+
 // settings
 var margin = {top: 20, right: 30, bottom: 30, left: 40},
-    widthScale = 1280,
+    widthScale = 980,
     width = widthScale - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
     marginBars = 15;
@@ -67,24 +90,38 @@ var y = d3.scale.linear()
     .range([height, 0]);
 
 var x = d3.scale.linear()
-    .domain([0, d3.max(data)])
-    .range([0, widthScale]);
+    .domain([0, data.length / songTime.minutes])
+    .range([0, width + margin.left + margin.right]);
+
+var totalBars = data.length / songTime.minutes; 
+
+const bars = [];
+for (let i = 0; i < totalBars; i++) {
+    bars.push(i);
+}
 
 // Seteo los EJES
 var xAxis = d3.svg.axis()
     .scale(x)
-    .orient("bottom");
+    .orient("bottom")
+    .ticks(totalBars)
+    .tickFormat(function(d) {
+        if (d % 12 === 0) { // Poner tick cada 5 segundos
+            return (d/12) + 'minute'; // el valor 12 deberia calcularlo de acuerdo a cuantos minutos hay y ver cuanto seria dividir para que hayan cada 5 segundos barras
+        }
+    })
+    .tickPadding([5]);
 
 var yAxis = d3.svg.axis()
     .scale(y)
     .orient("left");
 
 // Ancho de las barras proporcional a la cantidad de información divivido el ancho del contenedor
-var barWidth = width / data.length;
+var barWidth = width / totalBars;
 
 // get the element chart and set the settings
 var chart = d3.select(".chart")
-              .attr("width", width + margin.left + margin.right)
+              .attr("width", widthScale + margin.left + margin.right)
               .attr("height", height + margin.top + margin.bottom)
             .append("g")
               .attr("transform", "translate(" + margin.left + "," + margin.top + ")");;
@@ -98,16 +135,14 @@ chart.append("g")
     .attr("class", "y axis")
     .call(yAxis);
 
-chart.selectAll(".bar")
-      .data(data)
+const bar = chart.selectAll(".bar")
+      .data(bars)
     .enter().append("rect")
-        .attr("transform", "translate(" + marginBars + ", 0)")
+        .attr("transform", "translate(9, 0)")
       .attr("class", "bar")
-      .attr("x", function(d) { console.log('x?', x(d)); return x(d); })
-      .attr("y", function(d) { console.log('y?', y(d)); return 0; })
+      .attr("x", function(d) { return x(d); })
       .attr("height", function(d) { return height - marginBars; })
       .attr("width", barWidth - 1);
-
 
 </script>
 </body>
