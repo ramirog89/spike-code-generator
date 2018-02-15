@@ -25,6 +25,7 @@
 
 .axis text {
   font: 10px sans-serif;
+  fill: #000;
 }
 
 .axis path,
@@ -33,6 +34,7 @@
   stroke: #000;
   shape-rendering: crispEdges;
 }
+
 
 </style>
 </head>
@@ -55,18 +57,10 @@ for( let i = 0; i < 60; i ++) {
 
 // settings
 var margin = {top: 20, right: 30, bottom: 30, left: 40},
-    width = 1280 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
-
-// get the element chart and set the settings
-var chart = d3.select(".chart")
-              .attr("width", width)
-              .attr("height", height)
-            .append("g")
-              .attr("transform", "translate(" + margin.left + "," + margin.top + ")");;
-
-// Ancho de las barras proporcional a la cantidad de información divivido el ancho del contenedor
-var barWidth = width / data.length;
+    widthScale = 1280,
+    width = widthScale - margin.left - margin.right,
+    height = 600 - margin.top - margin.bottom;
+    marginBars = 15;
 
 // Create the linear scales
 var y = d3.scale.linear()
@@ -74,37 +68,45 @@ var y = d3.scale.linear()
 
 var x = d3.scale.linear()
     .domain([0, d3.max(data)])
-    .range([0, 500]);
+    .range([0, widthScale]);
 
 // Seteo los EJES
 var xAxis = d3.svg.axis()
     .scale(x)
     .orient("bottom");
 
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left");
 
-var bar = chart.selectAll("g")
-    .data(data)
-.enter().append("g")
-    .attr("transform", function(d, i) {  return "translate(" + i * barWidth + ",0)"; });
+// Ancho de las barras proporcional a la cantidad de información divivido el ancho del contenedor
+var barWidth = width / data.length;
 
-bar.append("rect")
-    // .attr("y", function(d) { return y(d); })
-    .attr("y", function(d) { return 0; })
-    // .attr("height", function(d) { return height - y(d); })
-    .attr("height", function(d) { return height; })
-    .attr("width", barWidth - 1);
-
-bar.append("text")
-    .attr("x", barWidth / 2)
-    // .attr("y", function(d) { return y(d) + 3; })
-    .attr("y", function(d) { return 10; })
-    .attr("dy", ".75em")
-    .text(function(d) { return d; });
+// get the element chart and set the settings
+var chart = d3.select(".chart")
+              .attr("width", width + margin.left + margin.right)
+              .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+              .attr("transform", "translate(" + margin.left + "," + margin.top + ")");;
 
 chart.append("g")
-    .attr("class", "x axis")
-    .attr("transform", "translate(0," + height + ")")
-    .call(xAxis);
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+chart.append("g")
+    .attr("class", "y axis")
+    .call(yAxis);
+
+chart.selectAll(".bar")
+      .data(data)
+    .enter().append("rect")
+        .attr("transform", "translate(" + marginBars + ", 0)")
+      .attr("class", "bar")
+      .attr("x", function(d) { console.log('x?', x(d)); return x(d); })
+      .attr("y", function(d) { console.log('y?', y(d)); return 0; })
+      .attr("height", function(d) { return height - marginBars; })
+      .attr("width", barWidth - 1);
 
 
 </script>
