@@ -4,41 +4,10 @@
     <title>Draw Audio File With d3</title>
 <style>
 
-.chart div {
-  font: 10px sans-serif;
-  background-color: steelblue;
-  text-align: right;
+.chart {
   padding: 3px;
   margin: 1px;
-  color: white;
 }
-
-.chart rect {
-  fill: steelblue;
-}
-
-.chart text {
-  fill: white;
-  font: 10px sans-serif;
-  text-anchor: middle;
-}
-
-.axis text {
-  font: 10px sans-serif;
-  fill: #000;
-}
-
-.axis path,
-.axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
-
-.bar:hover {
-    fill: brown;
-}
-
 
 .axis--grid .domain {
   fill: #ddd;
@@ -67,66 +36,31 @@
 
 <script type="text/javascript">
 
-const FIVE_MINUTES_IN_SECONDS = 300;
+const FIVE_MINUTES_IN_SECONDS = 180;
 
 let data = [];
 for( let i = 0; i < FIVE_MINUTES_IN_SECONDS; i ++) {
     data.push(i);
 }
 
-function secondsToHumanTime(time) {
-    const myTime = new Date(time);
-    return {
-        hours: myTime.getUTCHours(),
-        minutes: myTime.getUTCMinutes(),
-        seconds: myTime.getUTCSeconds(),
-    };
-};
-
-const durationSongInMiliseconds = data.length * 1000;
-
-const songTime = secondsToHumanTime(durationSongInMiliseconds);
-
-// El dominio del los valores de X tiene que estar en "Minutos", por ejemplo
-// si el tema dura, 300 segundos, o sea 5 minutos, tiene que haber un tick value por minuto y 
-// tiene que aparecer bars que ocupen 5 segundos, por ende 12 en total
-
 // settings
 var margin = {top: 20, right: 30, bottom: 30, left: 40},
-    widthScale = 980,
+    widthScale = 1200,
     width = widthScale - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
     marginBars = 15;
 
-// Create the linear scales
-var y = d3.scaleLinear()
-    .range([height, 0]);
 
-var x = d3.scaleLinear() // Reemplazar esta escala por una escala de Tiempo
-    .domain([0, data.length / songTime.minutes])
+var x = d3.scaleTime()
+    .domain([0, (data.length * 1000)]) // segundos a milisegundos...
     .range([0, width + margin.left + margin.right]);
 
-var totalBars = data.length / songTime.minutes; 
+// https://github.com/d3/d3-time-format
 
-const bars = [];
-for (let i = 0; i < totalBars; i++) {
-    bars.push(i);
-}
-
-// Seteo los EJES
 var xAxis = d3.axisBottom(x)
-    .ticks(totalBars)
-    .tickFormat(function(d) {
-        if (d % 12 === 0) { // Poner tick cada 5 segundos
-            return (d/12) + 'minute'; // el valor 12 deberia calcularlo de acuerdo a cuantos minutos hay y ver cuanto seria dividir para que hayan cada 5 segundos barras
-        }
-    })
-    .tickPadding([5]);
-
-var yAxis = d3.axisLeft(y);
-
-// Ancho de las barras proporcional a la cantidad de información divivido el ancho del contenedor
-var barWidth = width / totalBars;
+    .ticks(d3.timeSecond.every(5))
+    .tickPadding([5])
+    .tickFormat(d3.timeFormat('%M:%S'));
 
 // get the element chart and set the settings
 var chart = d3.select(".chart")
@@ -136,22 +70,22 @@ var chart = d3.select(".chart")
               .attr("transform", "translate(" + margin.left + "," + margin.top + ")");;
 
 chart.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis);
-
+    .attr("class", "axis axis--grid")
+    .attr("transform", "translate(0, " + height + ")")
+    .call(d3.axisBottom(x)
+        .ticks(d3.timeSecond.every(5))
+        .tickSize(-height)
+        .tickFormat(function() { return null; }))
+    .selectAll(".tick")
+        .classed("tick--minor", function(d) { return d.getHours(); });;
+    
 chart.append("g")
-    .attr("class", "y axis")
-    .call(yAxis);
-
-const bar = chart.selectAll(".bar")
-      .data(bars)
-    .enter().append("rect")
-        .attr("transform", "translate(9, 0)")
-      .attr("class", "bar")
-      .attr("x", function(d) { return x(d); })
-      .attr("height", function(d) { return height - marginBars; })
-      .attr("width", barWidth - 1);
+      .attr("class", "axis axis--x")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x)
+            .ticks(d3.timeSecond.every(5))
+            .tickPadding([5])
+            .tickFormat(d3.timeFormat('%M:%S')));
 
 chart.append("g")
     .attr("class", "brush")
@@ -160,15 +94,14 @@ chart.append("g")
         .on("brush", brushed));
 
 function brushed() {
-    console.log(d3.event.sourceEvent.type);
   if (d3.event.sourceEvent.type === "brush") return;
   var d0 = d3.event.selection.map(x.invert),
-      d1 = d0.map(d3.timeDay.round);
+      d1 = d0.map(d3.timeSecond.round);
 
   // If empty when rounded, use floor instead.
   if (d1[0] >= d1[1]) {
-    d1[0] = d3.timeDay.floor(d0[0]);
-    d1[1] = d3.timeDay.offset(d1[0]);
+    d1[0] = d3.timeSecond.floor(d0[0]);
+    d1[1] = d3.timeSecond.offset(d1[0]);
   }
 
   d3.select(this).call(d3.event.target.move, d1.map(x));
