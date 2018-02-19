@@ -28,6 +28,12 @@
 	fill: red;
 }
 
+.zoom {
+  cursor: move;
+  fill: none;
+  pointer-events: all;
+}
+
 </style>
 </head>
 <body>
@@ -72,12 +78,20 @@ var xAxis = d3.axisBottom(x)
     .tickPadding([5])
     .tickFormat(d3.timeFormat('%M:%S'));
 
+// Zoom Function
+var zoom = d3.zoom()
+    .scaleExtent([1, 2])
+    .on("zoom", zoomFunction);
+
 // get the element chart and set the settings
 var chart = d3.select(".chart")
               .attr("width", widthScale + margin.left + margin.right)
               .attr("height", height + margin.top + margin.bottom)
             .append("g")
-              .attr("transform", "translate(" + margin.left + "," + margin.top + ")");;
+              .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+                .call(zoom)
+                .on("mousedown", function() { timer = false; })
+                .on("mouseup", function() { timer = true; });
 
 chart.append("g")
     .attr("class", "axis axis--grid")
@@ -89,7 +103,7 @@ chart.append("g")
     .selectAll(".tick")
         .classed("tick--minor", function(d) { return d.getHours(); });;
     
-chart.append("g")
+var gX = chart.append("g")
       .attr("class", "axis axis--x")
       .attr("transform", "translate(0," + height + ")")
       .call(d3.axisBottom(x)
@@ -108,6 +122,7 @@ function newBrush() {
   brushes.push({id: brushes.length, brush: brush});
 
   function brushend() {
+    if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
     // Figure out if our latest brush has a selection
     const lastBrushID = brushes[brushes.length - 1].id;
     const lastBrush = document.getElementById('brush-' + lastBrushID);
@@ -156,6 +171,20 @@ function drawBrushes() {
   brushSelection.exit()
     .remove();
 }
+
+function zoomFunction(){
+  // create new scale ojects based on event
+
+  var new_xScale = d3.event.transform.rescaleX(x)
+  console.log(d3.event.transform)
+
+  // update axes
+  gX.call(xAxis.scale(new_xScale));
+
+  // redraw bars...
+  
+};
+
 
 newBrush();
 drawBrushes();

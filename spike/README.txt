@@ -10,6 +10,8 @@
 o sea, si el tema dura 343 segundos que muestre 1 tick por segundo.
 y hacer zoom final hasta que se muestre 5 minutos y 43 segundos con ticks cada 5 segundos.
     http://d3-wiki.readthedocs.io/zh_CN/master/Zoom-Behavior/
+    http://bl.ocks.org/jasondavies/3743077
+    https://bl.ocks.org/mbostock/34f08d5e11952a80609169b7917d4172 > zoom con brush
 
 - Brush:
     https://bl.ocks.org/mbostock/6232620 -> aca hay un ejemplo de d3.scaleTime()
