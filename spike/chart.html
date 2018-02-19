@@ -32,7 +32,10 @@
 </head>
 <body>
     
-<!-- https://bost.ocks.org/mike/bar/3/ -->
+<!-- https://bost.ocks.org/mike/bar/3/ 
+
+http://blog.schedulenaut.com/multiple-no-collision-brushes-in-d3js/
+-->
 
 <svg class="chart"></svg>   
 
@@ -100,26 +103,15 @@ var gBrushes = chart.append('g')
 function newBrush() {
   var brush = d3.brushX()
     .extent([[0, 0], [widthScale, height]])
-    .on("start", brushstart)
-    .on("brush", brushed)
     .on("end", brushend);
 
   brushes.push({id: brushes.length, brush: brush});
 
-  function brushstart() {
-    // your stuff here
-  };
-
-  function brushed() {
-    // your stuff here
-  }
-
   function brushend() {
-
     // Figure out if our latest brush has a selection
-    var lastBrushID = brushes[brushes.length - 1].id;
-    var lastBrush = document.getElementById('brush-' + lastBrushID);
-    var selection = d3.brushSelection(lastBrush);
+    const lastBrushID = brushes[brushes.length - 1].id;
+    const lastBrush = document.getElementById('brush-' + lastBrushID);
+    const selection = d3.brushSelection(lastBrush);
 
     // If it does, that means we need another one
     if (selection && selection[0] !== selection[1]) {
@@ -132,7 +124,6 @@ function newBrush() {
 }
 
 function drawBrushes() {
-
   var brushSelection = gBrushes
     .selectAll('.brush')
     .data(brushes, function (d){return d.id});
@@ -147,14 +138,6 @@ function drawBrushes() {
       brushObject.brush(d3.select(this));
     });
 
-	/* REMOVE POINTER EVENTS ON BRUSH OVERLAYS
-	 *
-	 * This part is abbit tricky and requires knowledge of how brushes are implemented.
-	 * They register pointer events on a .overlay rectangle within them.
-	 * For existing brushes, make sure we disable their pointer events on their overlay.
-	 * This frees the overlay for the most current (as of yet with an empty selection) brush to listen for click and drag events
-	 * The moving and resizing is done with other parts of the brush, so that will still work.
-	 */
   brushSelection
     .each(function (brushObject){
       d3.select(this)
