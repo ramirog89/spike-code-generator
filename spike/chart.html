@@ -23,6 +23,11 @@
   stroke-opacity: .5;
 }
 
+.brush .selection {
+	stroke: #000;
+	fill: red;
+}
+
 </style>
 </head>
 <body>
@@ -42,6 +47,8 @@ let data = [];
 for( let i = 0; i < FIVE_MINUTES_IN_SECONDS; i ++) {
     data.push(i);
 }
+
+var brushes = [];
 
 // settings
 var margin = {top: 20, right: 30, bottom: 30, left: 40},
@@ -87,27 +94,87 @@ chart.append("g")
             .tickPadding([5])
             .tickFormat(d3.timeFormat('%M:%S')));
 
-chart.append("g")
-    .attr("class", "brush")
-    .call(d3.brushX()
-        .extent([[0, 0], [width, height]])
-        .on("brush", brushed));
+var gBrushes = chart.append('g')
+  .attr("class", "brushes");
 
-function brushed() {
-  if (d3.event.sourceEvent.type === "brush") return;
-  var d0 = d3.event.selection.map(x.invert),
-      d1 = d0.map(d3.timeMillisecond.round);
+function newBrush() {
+  var brush = d3.brushX()
+    .on("start", brushstart)
+    .on("brush", brushed)
+    .on("end", brushend);
 
-      console.log(d3.timeMillisecond.round);
+  brushes.push({id: brushes.length, brush: brush});
 
-  // If empty when rounded, use floor instead.
-  if (d1[0] >= d1[1]) {
-    d1[0] = d3.timeMillisecond.floor(d0[0]);
-    d1[1] = d3.timeMillisecond.offset(d1[0]);
+  function brushstart() {
+    // your stuff here
+  };
+
+  function brushed() {
+    // your stuff here
   }
 
-  d3.select(this).call(d3.event.target.move, d1.map(x));
+  function brushend() {
+
+    // Figure out if our latest brush has a selection
+    var lastBrushID = brushes[brushes.length - 1].id;
+    var lastBrush = document.getElementById('brush-' + lastBrushID);
+    var selection = d3.brushSelection(lastBrush);
+
+    // If it does, that means we need another one
+    if (selection && selection[0] !== selection[1]) {
+      newBrush();
+    }
+
+    // Always draw brushes
+    drawBrushes();
+  }
 }
+
+function drawBrushes() {
+
+  var brushSelection = gBrushes
+    .selectAll('.brush')
+    .data(brushes, function (d){return d.id});
+
+	// Set up new brushes
+  brushSelection.enter()
+    .insert("g", '.brush')
+    .attr('class', 'brush')
+    .attr('id', function(brush){ return "brush-" + brush.id; })
+    .each(function(brushObject) {
+      //call the brush
+      brushObject.brush(d3.select(this));
+    });
+
+	/* REMOVE POINTER EVENTS ON BRUSH OVERLAYS
+	 *
+	 * This part is abbit tricky and requires knowledge of how brushes are implemented.
+	 * They register pointer events on a .overlay rectangle within them.
+	 * For existing brushes, make sure we disable their pointer events on their overlay.
+	 * This frees the overlay for the most current (as of yet with an empty selection) brush to listen for click and drag events
+	 * The moving and resizing is done with other parts of the brush, so that will still work.
+	 */
+  brushSelection
+    .each(function (brushObject){
+      d3.select(this)
+        .attr('class', 'brush')
+        .selectAll('.overlay')
+        .style('pointer-events', function() {
+          var brush = brushObject.brush;
+          if (brushObject.id === brushes.length-1 && brush !== undefined) {
+            return 'all';
+          } else {
+            return 'none';
+          }
+        });
+    });
+
+  brushSelection.exit()
+    .remove();
+}
+
+newBrush();
+drawBrushes();
 
 </script>
 </body>
